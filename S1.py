@@ -123,7 +123,7 @@ print("\n\n🏁 Simulações finalizadas.")
 # ==========================================================================
 # TAREFA: PESSOA 6
 # Objetivo: Apresentar a tabela final compilada com os resultados.
-# --------------------------------------------------------------------------
+# -------------------------------------------------------------------------
 print("\n--> Tabela final de resultados a ser gerada aqui.")
 
 
