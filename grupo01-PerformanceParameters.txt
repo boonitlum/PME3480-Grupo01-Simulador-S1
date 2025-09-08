@@ -1,0 +1,9 @@
+# Simulator Data - S1
+# first column - rv
+# second column - Texh[°C]
+# third column - mpF[kg/h]
+# fourth column - Mt[kgfm]
+# 
+9.00	421.0	0.390	1.037
+10.00	413.0	0.392	1.075
+11.00	407.0	0.394	1.110
