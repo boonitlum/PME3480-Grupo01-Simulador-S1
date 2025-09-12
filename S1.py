@@ -85,26 +85,97 @@ for i in range(len(rv_exp)):
     print(f"=================================================")
 
     # ==========================================================================
-    # TAREFA: PESSOA 2
+    # TAREFA: Felipe
     # Objetivo: Montar a tupla `pars` e chamar a função do ciclo Otto.
     # --------------------------------------------------------------------------
     pars = (
         'fired', B, S, L, rv, n,
-        360.*(np.pi/180.), -150.*(np.pi/180.), # IVO, IVC
-        150.*(np.pi/180), -360.*(np.pi/180),  # EVO, EVC
+        360.*(np.pi/180.), -150.*(np.pi/180.), # ThIVO, ThIVC
+        150.*(np.pi/180), -360.*(np.pi/180),  # ThEVO, ThEVC
         ThSOC, ThEOC, aWF, mWF,
         pint, Tint, pexh, Texh_K, phi, fuel,
     )
 
-    # Descomente a linha abaixo para rodar a simulação
-    # V, m, T, p = oc.ottoCycle(Th, pars)
+    V, m, T, p = oc.ottoCycle(Th, pars)
     print("--> Simulação a ser executada aqui.")
 
     # ==========================================================================
     # TAREFA: PESSOA 3
     # Objetivo: Calcular Potências e Pressões Médias.
-    # --------------------------------------------------------------------------
-    print("--> Cálculos de Potência e Pressão a serem implementados aqui.")
+            # Geometria e volumes
+    Vd = (np.pi/4.0) * (B**2) * S          # Volume deslocado (m³)
+    cycles_per_sec = n / 2.0               # 4 tempos → 1 ciclo a cada 2 voltas
+
+    # --- Preparação dos dados (garante arrays e finitos) ---
+    p = np.asarray(p, float)
+    V = np.asarray(V, float)
+    T = np.asarray(T, float)
+    m = np.asarray(m, float)
+
+    good = np.isfinite(p) & np.isfinite(V) & np.isfinite(T) & np.isfinite(m)
+    if not np.any(good):
+        raise RuntimeError("Sem pontos válidos de p,V,T,m para integrar.")
+
+    # --- dV/dθ e produto p*dV/dθ ---
+    dVdTh = np.gradient(V, Th)             # m³/rad
+    pdV    = p * dVdTh
+
+    # --- Janela de VÁLVULAS FECHADAS: IVC -> EVO (gross work) ---
+    ThIVO, ThIVC, ThEVO, ThEVC = pars[6], pars[7], pars[8], pars[9]
+    mask_core = (Th > ThIVC) & (Th < ThEVO) & good
+
+    if np.count_nonzero(mask_core) < 2:
+        # fallback: integra no ciclo todo (pode incluir bombeamento)
+        Wi_gross = np.trapezoid(pdV[good], Th[good])
+    else:
+        Wi_gross = np.trapezoid(pdV[mask_core], Th[mask_core])  # J/ciclo
+
+    # orientação do laço (garante positivo)
+    if Wi_gross < 0.0:
+        Wi_gross = -Wi_gross
+
+    # Considera IMEP como IMEPg (sem bombeamento)
+    Wi = Wi_gross
+    IMEPg = Wi_gross / Vd                   # Pa
+    IMEP  = IMEPg                           # aqui usamos gross como IMEP (válvulas fechadas)
+    IMEPpm = 0.0                            # não contamos bombeamento neste estágio
+
+    # Potências
+    Pi  = Wi * cycles_per_sec               # Potência indicada (W)
+    Pe  = 2.0 * np.pi * n * Mt_Nm           # Potência efetiva (W) via torque
+    Pth = mpF_kg_s * PCI_CH4                # Potência térmica (W)
+
+    # BMEP (freio) pelo torque
+    BMEP = (4.0 * np.pi * Mt_Nm) / Vd       # Pa
+
+    # Rendimentos
+    eta_i = Pi / Pth if Pth > 0 else np.nan
+    eta_m = Pe / Pi  if Pi  > 0 else np.nan
+
+    # Guarda no agregado
+    resultados_finais.append({
+        'rv': float(rv),
+        'Texh_K': float(Texh_K),
+        'm_dot_fuel_kg_s': float(mpF_kg_s),
+        'Torque_Nm': float(Mt_Nm),
+        'Wi_gross_J_per_cycle': float(Wi_gross),
+        'Pi_W': float(Pi),
+        'Pe_W': float(Pe),
+        'Pth_W': float(Pth),
+        'IMEPg_Pa': float(IMEPg),
+        'IMEP_Pa': float(IMEP),
+        'IMEPpump_Pa': float(IMEPpm),
+        'BMEP_Pa': float(BMEP),
+        'eta_i': float(eta_i),
+        'eta_m': float(eta_m),
+    })
+
+    # Print resumido
+    print(f"--> Wi(gross, IVC→EVO) = {Wi_gross:.2f} J/ciclo | "
+          f"IMEPg = {IMEPg/1e5:.2f} bar | BMEP = {BMEP/1e5:.2f} bar")
+    print(f"    Pi = {Pi/1e3:.2f} kW | Pe = {Pe/1e3:.2f} kW | Pth = {Pth/1e3:.2f} kW")
+    print(f"    η_i = {eta_i*100:.1f}% | η_m = {eta_m*100:.1f}%")
+
 
     # ==========================================================================
     # TAREFA: PESSOA 4
