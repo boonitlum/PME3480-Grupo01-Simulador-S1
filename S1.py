@@ -86,7 +86,10 @@ for i in range(len(rv_exp)):
 
     # ==========================================================================
     # TAREFA: Felipe
-    # Objetivo: Montar a tupla `pars` e chamar a função do ciclo Otto.
+    # Objetivo: Estruturar os dados de entrada para o solver, encapsulando os
+    #           parâmetros (geométricos, operacionais, termodinâmicos) na
+    #           tupla `pars`, e executar a simulação para obter as curvas de
+    #           propriedades (P, V, T, m) para cada caso.
     # --------------------------------------------------------------------------
     pars = (
         'fired', B, S, L, rv, n,
@@ -97,7 +100,24 @@ for i in range(len(rv_exp)):
     )
 
     V, m, T, p = oc.ottoCycle(Th, pars)
-    print("--> Simulação a ser executada aqui.")
+
+    # Armazenar os resultados para uso posterior
+    caso_atual = {
+        'rv': rv,
+        'V_sim': V,
+        'm_sim': m,
+        'T_sim': T,
+        'p_sim': p,
+        'Th_sim': Th,
+        'Mt_exp': Mt_Nm,
+        'mpF_exp': mpF_kg_s
+    }
+    resultados_finais.append(caso_atual)
+    print(f"--> Simulação para rv = {rv} concluída e resultados armazenados.")
+
+    # Exemplo de como acessar os dados do primeiro caso (rv=9) após o loop:
+    # print("\nDados armazenados para o primeiro caso (rv=9):")
+    # print(resultados_finais[0]['p_sim']) # Imprime o array de pressão
 
     # ==========================================================================
     # TAREFA: PESSOA 3
