@@ -122,80 +122,91 @@ for i in range(len(rv_exp)):
     # ==========================================================================
     # TAREFA: PESSOA 3
     # Objetivo: Calcular Potências e Pressões Médias.
-            # Geometria e volumes
-    Vd = (np.pi/4.0) * (B**2) * S          # Volume deslocado (m³)
-    cycles_per_sec = n / 2.0               # 4 tempos → 1 ciclo a cada 2 voltas
 
-    # --- Preparação dos dados (garante arrays e finitos) ---
-    p = np.asarray(p, float)
-    V = np.asarray(V, float)
-    T = np.asarray(T, float)
-    m = np.asarray(m, float)
+    Zc = 1                 # nº de cilindros (S1)
+x  = 2                 # motor 4T -> 2 voltas por ciclo
+Vu = (np.pi/4.0) * B**2 * S
+omega = 2.0*np.pi*n    # rad/s
 
-    good = np.isfinite(p) & np.isfinite(V) & np.isfinite(T) & np.isfinite(m)
-    if not np.any(good):
-        raise RuntimeError("Sem pontos válidos de p,V,T,m para integrar.")
+# (Re)inicializa contêiner com métricas finais por caso
+metricas_finais = []
 
-    # --- dV/dθ e produto p*dV/dθ ---
-    dVdTh = np.gradient(V, Th)             # m³/rad
-    pdV    = p * dVdTh
+# Reexecuta/garante cálculos dentro do loop principal
+resultados_finais = []
+for i in range(len(rv_exp)):
+    rv = rv_exp[i]
+    Texh_K = Texh_exp_C[i] + 273.15
+    mpF_kg_s = mpF_exp_kg_h[i] / 3600.0
+    Mt_Nm = Mt_exp_kgfm[i] * 9.80665
 
-    # --- Janela de VÁLVULAS FECHADAS: IVC -> EVO (gross work) ---
-    ThIVO, ThIVC, ThEVO, ThEVC = pars[6], pars[7], pars[8], pars[9]
-    mask_core = (Th > ThIVC) & (Th < ThEVO) & good
+    print(f"\n=================================================")
+    print(f"INICIANDO SIMULAÇÃO PARA O CASO: rv = {rv}")
+    print(f"=================================================")
 
-    if np.count_nonzero(mask_core) < 2:
-        # fallback: integra no ciclo todo (pode incluir bombeamento)
-        Wi_gross = np.trapezoid(pdV[good], Th[good])
-    else:
-        Wi_gross = np.trapezoid(pdV[mask_core], Th[mask_core])  # J/ciclo
+    pars = (
+        'fired', B, S, L, rv, n,
+        360.*(np.pi/180.), -150.*(np.pi/180.),  # ThIVO, ThIVC
+        150.*(np.pi/180.), -360.*(np.pi/180.),  # ThEVO, ThEVC
+        ThSOC, ThEOC, aWF, mWF,
+        pint, Tint, pexh, Texh_K, phi, fuel,
+    )
 
-    # orientação do laço (garante positivo)
-    if Wi_gross < 0.0:
-        Wi_gross = -Wi_gross
+    V, m, T, p = oc.ottoCycle(Th, pars)
 
-    # Considera IMEP como IMEPg (sem bombeamento)
-    Wi = Wi_gross
-    IMEPg = Wi_gross / Vd                   # Pa
-    IMEP  = IMEPg                           # aqui usamos gross como IMEP (válvulas fechadas)
-    IMEPpm = 0.0                            # não contamos bombeamento neste estágio
+    # ------------------- Trabalho indicado (robusto em θ) -------------------
+    dVdTh = np.gradient(V, Th)                 # [m³/rad]
+    Wi = np.trapezoid(p * dVdTh, Th)           # [J/ciclo]
+    Wi = abs(Wi)                               # garante sinal físico
 
-    # Potências
-    Pi  = Wi * cycles_per_sec               # Potência indicada (W)
-    Pe  = 2.0 * np.pi * n * Mt_Nm           # Potência efetiva (W) via torque
-    Pth = mpF_kg_s * PCI_CH4                # Potência térmica (W)
+    # ------------------------- Potências (kW) ------------------------------
+    Ni_kW = (Wi * (Zc * (n/x))) / 1000.0       # indicada (kW)
+    Ne_kW = (Mt_Nm * omega) / 1000.0           # efetiva a partir do torque (kW)
+    Na_kW = Ni_kW - Ne_kW                       # atrito (kW)
 
-    # BMEP (freio) pelo torque
-    BMEP = (4.0 * np.pi * Mt_Nm) / Vd       # Pa
+    # ---------------------- Potência térmica e rendimentos ------------------
+    Nt_kW = (mpF_kg_s * PCI_CH4) / 1000.0      # térmica (kW) com PCI em J/kg
+    nt_pct = 100.0 * (Ni_kW / Nt_kW) if Nt_kW > 0 else np.nan   # térmico
+    nm_pct = 100.0 * (Ne_kW / Ni_kW) if Ni_kW > 0 else np.nan   # mecânico
+    ng_pct = 100.0 * (Ne_kW / Nt_kW) if Nt_kW > 0 else np.nan   # global
 
-    # Rendimentos
-    eta_i = Pi / Pth if Pth > 0 else np.nan
-    eta_m = Pe / Pi  if Pi  > 0 else np.nan
+    # ------------------ MEPs usando Vu (swept volume) ----------------------
+    # imep = (Pot_indicada*1000)*x / (Vu * Zc * n)  [Pa] -> /1e3 [kPa]
+    denom = (Vu * Zc * n)
+    imep_kPa = ((Ni_kW * 1e3) * x / denom) / 1e3
+    bmep_kPa = ((Ne_kW * 1e3) * x / denom) / 1e3
+    fmep_kPa = (((Ni_kW - Ne_kW) * 1e3) * x / denom) / 1e3
 
-    # Guarda no agregado
-    resultados_finais.append({
-        'rv': float(rv),
-        'Texh_K': float(Texh_K),
-        'm_dot_fuel_kg_s': float(mpF_kg_s),
-        'Torque_Nm': float(Mt_Nm),
-        'Wi_gross_J_per_cycle': float(Wi_gross),
-        'Pi_W': float(Pi),
-        'Pe_W': float(Pe),
-        'Pth_W': float(Pth),
-        'IMEPg_Pa': float(IMEPg),
-        'IMEP_Pa': float(IMEP),
-        'IMEPpump_Pa': float(IMEPpm),
-        'BMEP_Pa': float(BMEP),
-        'eta_i': float(eta_i),
-        'eta_m': float(eta_m),
-    })
+    # ------------------ Consumo específico (g/kWh) -------------------------
+    sfc_g_kWh = (mpF_kg_s / Ne_kW) * 3600.0 * 1e3 if Ne_kW > 0 else np.nan
 
-    # Print resumido
-    print(f"--> Wi(gross, IVC→EVO) = {Wi_gross:.2f} J/ciclo | "
-          f"IMEPg = {IMEPg/1e5:.2f} bar | BMEP = {BMEP/1e5:.2f} bar")
-    print(f"    Pi = {Pi/1e3:.2f} kW | Pe = {Pe/1e3:.2f} kW | Pth = {Pth/1e3:.2f} kW")
-    print(f"    η_i = {eta_i*100:.1f}% | η_m = {eta_m*100:.1f}%")
+    # Armazena tudo do caso
+    caso_atual = {
+        'rv': rv,
+        'Th_sim': Th, 'V_sim': V, 'p_sim': p, 'T_sim': T, 'm_sim': m,
+        'Mt_exp': Mt_Nm, 'mpF_exp': mpF_kg_s,
+        'Wi_J_ciclo': Wi,
+        'Ni_kW': Ni_kW, 'Ne_kW': Ne_kW, 'Na_kW': Na_kW, 'Nt_kW': Nt_kW,
+        'eta_term_pct': nt_pct, 'eta_mec_pct': nm_pct, 'eta_glob_pct': ng_pct,
+        'imep_kPa': imep_kPa, 'bmep_kPa': bmep_kPa, 'fmep_kPa': fmep_kPa,
+        'sfc_g_kWh': sfc_g_kWh
+    }
+    resultados_finais.append(caso_atual)
 
+    # Print-resumo do caso
+    print(f"--> rv={rv:.1f} | Ni={Ni_kW:.2f} kW | Ne={Ne_kW:.2f} kW | Nt={Nt_kW:.2f} kW")
+    print(f"    MEPs: imep={imep_kPa:.1f} kPa | bmep={bmep_kPa:.1f} kPa | fmep={fmep_kPa:.1f} kPa")
+    print(f"    ηt={nt_pct:.1f}% | ηm={nm_pct:.1f}% | ηg={ng_pct:.1f}% | SFC={sfc_g_kWh:.1f} g/kWh")
+
+# --------------------------------------------------------------------------
+# 6. Tabela-resumo final (linhas por caso)
+# --------------------------------------------------------------------------
+print("\n========== RESUMO FINAL ==========")
+print("rv |  Ni[kW]  Ne[kW]  Nt[kW] | imep[kPa] bmep[kPa] fmep[kPa] | ηt[%] ηm[%] ηg[%] | SFC[g/kWh]")
+for r in resultados_finais:
+    print(f"{r['rv']:>2.0f} | {r['Ni_kW']:>7.2f} {r['Ne_kW']:>7.2f} {r['Nt_kW']:>7.2f} | "
+          f"{r['imep_kPa']:>8.1f} {r['bmep_kPa']:>9.1f} {r['fmep_kPa']:>9.1f} | "
+          f"{r['eta_term_pct']:>5.1f} {r['eta_mec_pct']:>5.1f} {r['eta_glob_pct']:>5.1f} | "
+          f"{r['sfc_g_kWh']:>9.1f}")
 
     # ==========================================================================
     # TAREFA: PESSOA 4
