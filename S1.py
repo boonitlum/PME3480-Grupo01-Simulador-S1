@@ -205,112 +205,107 @@ for i in range(len(rv_exp)):
     # --------------------------------------------------------------------------
     print("--> Geração de gráficos e tabelas a ser implementada aqui.")
 
-    #-----------------------------------------------------------------------------#
-# 5. PLOTS (exemplos para rv = 9, 10, 11)
-#-----------------------------------------------------------------------------#
+    # ========================= PLOTS DENTRO DO LOOP ========================= #
+    # (cole logo após resultados_finais.append(caso_atual))
 
-# Seleciona três casos específicos
-caso1 = resultados_finais[0]   # rv = 9
-caso2 = resultados_finais[1]   # rv = 10
-caso3 = resultados_finais[2]   # rv = 11
+    import os
+    os.makedirs("figs", exist_ok=True)
 
-V1, p1, CAD = caso1['V_sim'], caso1['p_sim'], np.degrees(caso1['Th_sim'])
-V2, p2      = caso2['V_sim'], caso2['p_sim']
-V3, p3      = caso3['V_sim'], caso3['p_sim']
+    def _sane(arr):
+        arr = np.array(arr, dtype=float)
+        arr[~np.isfinite(arr)] = np.nan   # remove inf/NaN
+        return arr
 
-# Diagramas P-V
-plt.figure(1, figsize=(10, 8))
+    def _pbar(pa):
+        pb = _sane(pa / 1e5)              # Pa -> bar
+        # evita autoscale maluco com pressões <= 0
+        pb = np.where(pb > 0, pb, np.nan)
+        return pb
 
-plt.subplot(2, 2, 1)
-plt.plot(V1, p1, color='r')
-plt.title("Diagrama p–V (rv = 9)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+    # --- dados do caso corrente (já existem como V, p, Th) ---
+    rv_lab = f"{rv:.1f}".replace('.', '_')
+    V_plot   = _sane(V)
+    pbar_plot= _pbar(p)
+    CAD_plot = np.degrees(Th)
 
-plt.subplot(2, 2, 2)
-plt.plot(V2, p2, color='b')
-plt.title("Diagrama p–V (rv = 10)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+    # ===== 1) FIGURA DO CASO CORRENTE (3 subplots lado a lado) =====
+    plt.figure(figsize=(12, 4))
 
-plt.subplot(2, 2, 3)
-plt.plot(V3, p3, color='g')
-plt.title("Diagrama p–V (rv = 11)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+    # p–V
+    plt.subplot(1, 3, 1)
+    plt.plot(V_plot, pbar_plot, '-', linewidth=1.5)
+    plt.title(f"p–V (rv = {rv:.1f})")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (bar)")
+    plt.grid(True)
 
-plt.subplot(2, 2, 4)
-plt.plot(V1, p1, 'r', label='rv = 9')
-plt.plot(V2, p2, 'b', label='rv = 10')
-plt.plot(V3, p3, 'g', label='rv = 11')
-plt.title("p–V comparativo")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
-plt.legend()
+    # p–θ
+    plt.subplot(1, 3, 2)
+    plt.plot(CAD_plot, pbar_plot, '-', linewidth=1.3)
+    plt.title(f"p–θ (rv = {rv:.1f})")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (bar)")
+    plt.grid(True)
 
-# Gráficos Pressão x Ângulo do Virabrequim (CAD)
-plt.figure(2, figsize=(10, 8))
+    # V–θ
+    plt.subplot(1, 3, 3)
+    plt.plot(CAD_plot, V_plot, '-', linewidth=1.3)
+    plt.title(f"V–θ (rv = {rv:.1f})")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+    plt.grid(True)
 
-plt.subplot(2, 2, 1)
-plt.plot(CAD, p1, 'r')
-plt.title("p–θ (rv = 9)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+    plt.tight_layout()
+    plt.savefig(f"figs/caso_rv_{rv_lab}.png", dpi=200)
+    plt.close()
 
-plt.subplot(2, 2, 2)
-plt.plot(CAD, p2, 'b')
-plt.title("p–θ (rv = 10)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+    # ===== 2) FIGURAS COMPARATIVAS PROGRESSIVAS (todos os casos até aqui) =====
+    # (usando o que já está em resultados_finais)
+    # p–V OVERLAY
+    plt.figure(figsize=(6.4, 4.8))
+    for r in resultados_finais:
+        Vc   = _sane(r['V_sim'])
+        pbar = _pbar(r['p_sim'])
+        plt.plot(Vc, pbar, linewidth=1.0, label=f"rv={r['rv']:.1f}")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (bar)")
+    plt.title("Diagramas p–V (acumulado)")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"figs/pV_overlay_ate_rv_{rv_lab}.png", dpi=200)
+    plt.close()
 
-plt.subplot(2, 2, 3)
-plt.plot(CAD, p3, 'g')
-plt.title("p–θ (rv = 11)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+    # p–θ OVERLAY
+    plt.figure(figsize=(6.4, 4.8))
+    for r in resultados_finais:
+        CAD  = np.degrees(r['Th_sim'])
+        pbar = _pbar(r['p_sim'])
+        plt.plot(CAD, pbar, linewidth=1.0, label=f"rv={r['rv']:.1f}")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (bar)")
+    plt.title("p–θ (acumulado)")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"figs/p_th_overlay_ate_rv_{rv_lab}.png", dpi=200)
+    plt.close()
 
-plt.subplot(2, 2, 4)
-plt.plot(CAD, p1, 'r', label='rv = 9')
-plt.plot(CAD, p2, 'b', label='rv = 10')
-plt.plot(CAD, p3, 'g', label='rv = 11')
-plt.title("p–θ comparativo")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
-plt.legend()
-
-# Gráficos Volume x Ângulo do Virabrequim (CAD)
-plt.figure(3, figsize=(10, 8))
-
-plt.subplot(2, 2, 1)
-plt.plot(CAD, V1, 'r')
-plt.title("V–θ (rv = 9)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
-
-plt.subplot(2, 2, 2)
-plt.plot(CAD, V2, 'b')
-plt.title("V–θ (rv = 10)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
-
-plt.subplot(2, 2, 3)
-plt.plot(CAD, V3, 'g')
-plt.title("V–θ (rv = 11)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
-
-plt.subplot(2, 2, 4)
-plt.plot(CAD, V1, 'r', label='rv = 9')
-plt.plot(CAD, V2, 'b', label='rv = 10')
-plt.plot(CAD, V3, 'g', label='rv = 11')
-plt.title("V–θ comparativo")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
-plt.legend()
-
-plt.tight_layout()
-plt.show()
-
+    # V–θ OVERLAY
+    plt.figure(figsize=(6.4, 4.8))
+    for r in resultados_finais:
+        CAD = np.degrees(r['Th_sim'])
+        Vc  = _sane(r['V_sim'])
+        plt.plot(CAD, Vc, linewidth=1.0, label=f"rv={r['rv']:.1f}")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+    plt.title("V–θ (acumulado)")
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(f"figs/V_th_overlay_ate_rv_{rv_lab}.png", dpi=200)
+    plt.close()
+    # ========================================================================== #
 
 print("\n\n🏁 Simulações finalizadas.")
 
