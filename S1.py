@@ -199,113 +199,115 @@ for i in range(len(rv_exp)):
               #f"{r['sfc_g_kWh']:>9.1f}")
 
 
-    # ==========================================================================
-    # TAREFA: PESSOA 5
-    # Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
-    # --------------------------------------------------------------------------
-    print("--> Geração de gráficos e tabelas a ser implementada aqui.")
+# ==========================================================================
+# TAREFA: Gustavo
+# Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
+# --------------------------------------------------------------------------
 
-    # ========================= PLOTS DENTRO DO LOOP ========================= #
-    # (cole logo após resultados_finais.append(caso_atual))
+# --- Volumes (m³) ---
+V1 = resultados_finais[0]['V_sim']   # caso rv=9
+V2 = resultados_finais[1]['V_sim']   # caso rv=10
+V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
-    import os
-    os.makedirs("figs", exist_ok=True)
+# --- Pressões (convertidas de Pa para bar) ---
+p1 = resultados_finais[0]['p_sim'] / 1e5
+p2 = resultados_finais[1]['p_sim'] / 1e5
+p3 = resultados_finais[2]['p_sim'] / 1e5
 
-    def _sane(arr):
-        arr = np.array(arr, dtype=float)
-        arr[~np.isfinite(arr)] = np.nan   # remove inf/NaN
-        return arr
+# --- Ângulo do virabrequim (em graus) ---
+CAD = np.degrees(resultados_finais[0]['Th_sim'])
 
-    def _pbar(pa):
-        pb = _sane(pa / 1e5)              # Pa -> bar
-        # evita autoscale maluco com pressões <= 0
-        pb = np.where(pb > 0, pb, np.nan)
-        return pb
+# Diagramas P-V
+plt.figure(1)
 
-    # --- dados do caso corrente (já existem como V, p, Th) ---
-    rv_lab = f"{rv:.1f}".replace('.', '_')
-    V_plot   = _sane(V)
-    pbar_plot= _pbar(p)
-    CAD_plot = np.degrees(Th)
+plt.subplot(2, 2, 1)
+plt.plot(V1, p1, color='r', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 9)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-    # ===== 1) FIGURA DO CASO CORRENTE (3 subplots lado a lado) =====
-    plt.figure(figsize=(12, 4))
+plt.subplot(2, 2, 2)
+plt.plot(V2, p2, color='b', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 10)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-    # p–V
-    plt.subplot(1, 3, 1)
-    plt.plot(V_plot, pbar_plot, '-', linewidth=1.5)
-    plt.title(f"p–V (rv = {rv:.1f})")
-    plt.xlabel("Volume (m³)")
-    plt.ylabel("Pressão (bar)")
-    plt.grid(True)
+plt.subplot(2, 2, 3)
+plt.plot(V3, p3, color='g', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 11)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-    # p–θ
-    plt.subplot(1, 3, 2)
-    plt.plot(CAD_plot, pbar_plot, '-', linewidth=1.3)
-    plt.title(f"p–θ (rv = {rv:.1f})")
-    plt.xlabel("Ângulo do Virabrequim (°)")
-    plt.ylabel("Pressão (bar)")
-    plt.grid(True)
+plt.subplot(2, 2, 4)
+plt.plot(V1, p1, label='rv = 9', color='r', linestyle='-')
+plt.plot(V2, p2, label='rv = 10', color='b', linestyle='-')
+plt.plot(V3, p3, label='rv = 11', color='g', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (diferentes valores de rv)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
+plt.legend()
 
-    # V–θ
-    plt.subplot(1, 3, 3)
-    plt.plot(CAD_plot, V_plot, '-', linewidth=1.3)
-    plt.title(f"V–θ (rv = {rv:.1f})")
-    plt.xlabel("Ângulo do Virabrequim (°)")
-    plt.ylabel("Volume (m³)")
-    plt.grid(True)
+# Gráficos de Pressão x CAD
+plt.figure(2)
 
-    plt.tight_layout()
-    plt.savefig(f"figs/caso_rv_{rv_lab}.png", dpi=200)
-    plt.close()
+plt.subplot(2, 2, 1)
+plt.plot(CAD, p1, color='r', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-    # ===== 2) FIGURAS COMPARATIVAS PROGRESSIVAS (todos os casos até aqui) =====
-    # (usando o que já está em resultados_finais)
-    # p–V OVERLAY
-    plt.figure(figsize=(6.4, 4.8))
-    for r in resultados_finais:
-        Vc   = _sane(r['V_sim'])
-        pbar = _pbar(r['p_sim'])
-        plt.plot(Vc, pbar, linewidth=1.0, label=f"rv={r['rv']:.1f}")
-    plt.xlabel("Volume (m³)")
-    plt.ylabel("Pressão (bar)")
-    plt.title("Diagramas p–V (acumulado)")
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"figs/pV_overlay_ate_rv_{rv_lab}.png", dpi=200)
-    plt.close()
+plt.subplot(2, 2, 2)
+plt.plot(CAD, p2, color='b', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-    # p–θ OVERLAY
-    plt.figure(figsize=(6.4, 4.8))
-    for r in resultados_finais:
-        CAD  = np.degrees(r['Th_sim'])
-        pbar = _pbar(r['p_sim'])
-        plt.plot(CAD, pbar, linewidth=1.0, label=f"rv={r['rv']:.1f}")
-    plt.xlabel("Ângulo do Virabrequim (°)")
-    plt.ylabel("Pressão (bar)")
-    plt.title("p–θ (acumulado)")
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"figs/p_th_overlay_ate_rv_{rv_lab}.png", dpi=200)
-    plt.close()
+plt.subplot(2, 2, 3)
+plt.plot(CAD, p3, color='g', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-    # V–θ OVERLAY
-    plt.figure(figsize=(6.4, 4.8))
-    for r in resultados_finais:
-        CAD = np.degrees(r['Th_sim'])
-        Vc  = _sane(r['V_sim'])
-        plt.plot(CAD, Vc, linewidth=1.0, label=f"rv={r['rv']:.1f}")
-    plt.xlabel("Ângulo do Virabrequim (°)")
-    plt.ylabel("Volume (m³)")
-    plt.title("V–θ (acumulado)")
-    plt.grid(True)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(f"figs/V_th_overlay_ate_rv_{rv_lab}.png", dpi=200)
-    plt.close()
-    # ========================================================================== #
+plt.subplot(2, 2, 4)
+plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
+plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
+plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
+plt.legend()
+
+# Gráficos de Volume x CAD
+plt.figure(3)
+
+plt.subplot(2, 2, 1)
+plt.plot(CAD, V1, color='r', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
+
+plt.subplot(2, 2, 2)
+plt.plot(CAD, V2, color='b', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
+
+plt.subplot(2, 2, 3)
+plt.plot(CAD, V3, color='g', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
+
+plt.subplot(2, 2, 4)
+plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
+plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
+plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
+plt.legend()
+
+plt.show()
 
 print("\n\n🏁 Simulações finalizadas.")
 
@@ -313,7 +315,26 @@ print("\n\n🏁 Simulações finalizadas.")
 # TAREFA: PESSOA 6
 # Objetivo: Apresentar a tabela final compilada com os resultados.
 # -------------------------------------------------------------------------
-print("\n--> Tabela final de resultados a ser gerdX.")
+
+print("\n========== TABELA FINAL DE RESULTADOS ==========")
+print(f"{'rv':>4} | {'Ni (kW)':>10} {'Ne (kW)':>10} {'Na (kW)':>10} {'Nt (kW)':>10} | "
+      f"{'ηm (%)':>8} {'ηt (%)':>8} {'ηg (%)':>8} {'ηv (%)':>8} | "
+      f"{'Ce (kg/kJ)':>12} | {'imep (kPa)':>12} {'bmep (kPa)':>12} {'fmep (kPa)':>12}")
+
+print("-"*130)
+
+for r in resultados_finais:
+    # consumo específico em kg/kJ
+    Ce = (r['mpF_exp'] / r['Nt']) if r['Nt'] > 0 else np.nan
+
+    print(f"{r['rv']:4.0f} | "
+          f"{r['Ni']:10.2f} {r['Ne']:10.2f} {r['Na']:10.2f} {r['Nt']:10.2f} | "
+          f"{r['nm']:8.2f} {r['nt']:8.2f} {r['ng']:8.2f} {r['nv']:8.2f} | "
+          f"{Ce:12.5f} | "
+          f"{r['imep']:12.2f} {r['bmep']:12.2f} {r['fmep']:12.2f}")
+
+
+
 
 
 #-----------------------------------------------------------------------------#
