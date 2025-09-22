@@ -85,6 +85,7 @@ resultados_finais = []
 for i in range(len(rv_exp)):
     # Pega os parâmetros para a simulação atual
     rv = rv_exp[i]
+    Vc = Vu/(rv - 1)
     Texh_K = Texh_exp_C[i] + 273.15
     mpF_kg_s = mpF_exp_kg_h[i] / 3600
     Mt_Nm = Mt_exp_kgfm[i] * 9.80665
@@ -203,6 +204,113 @@ for i in range(len(rv_exp)):
     # Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
     # --------------------------------------------------------------------------
     print("--> Geração de gráficos e tabelas a ser implementada aqui.")
+
+    #-----------------------------------------------------------------------------#
+    # 5. PLOTS (exemplos para rv = 9, 10, 11)
+    #-----------------------------------------------------------------------------#
+
+    # Seleciona três casos específicos
+    caso1 = resultados_finais[0]   # rv = 9
+    caso2 = resultados_finais[1]   # rv = 10
+    caso3 = resultados_finais[2]   # rv = 11
+
+    V1, p1, CAD = caso1['V_sim'], caso1['p_sim'], np.degrees(caso1['Th_sim'])
+    V2, p2      = caso2['V_sim'], caso2['p_sim']
+    V3, p3      = caso3['V_sim'], caso3['p_sim']
+
+    # Diagramas P-V
+    plt.figure(1, figsize=(10, 8))
+
+    plt.subplot(2, 2, 1)
+    plt.plot(V1, p1, color='r')
+    plt.title("Diagrama p–V (rv = 9)")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 2)
+    plt.plot(V2, p2, color='b')
+    plt.title("Diagrama p–V (rv = 10)")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(V3, p3, color='g')
+    plt.title("Diagrama p–V (rv = 11)")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 4)
+    plt.plot(V1, p1, 'r', label='rv = 9')
+    plt.plot(V2, p2, 'b', label='rv = 10')
+    plt.plot(V3, p3, 'g', label='rv = 11')
+    plt.title("p–V comparativo")
+    plt.xlabel("Volume (m³)")
+    plt.ylabel("Pressão (Pa)")
+    plt.legend()
+
+    # Gráficos Pressão x Ângulo do Virabrequim (CAD)
+    plt.figure(2, figsize=(10, 8))
+
+    plt.subplot(2, 2, 1)
+    plt.plot(CAD, p1, 'r')
+    plt.title("p–θ (rv = 9)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 2)
+    plt.plot(CAD, p2, 'b')
+    plt.title("p–θ (rv = 10)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(CAD, p3, 'g')
+    plt.title("p–θ (rv = 11)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (Pa)")
+
+    plt.subplot(2, 2, 4)
+    plt.plot(CAD, p1, 'r', label='rv = 9')
+    plt.plot(CAD, p2, 'b', label='rv = 10')
+    plt.plot(CAD, p3, 'g', label='rv = 11')
+    plt.title("p–θ comparativo")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Pressão (Pa)")
+    plt.legend()
+
+    # Gráficos Volume x Ângulo do Virabrequim (CAD)
+    plt.figure(3, figsize=(10, 8))
+
+    plt.subplot(2, 2, 1)
+    plt.plot(CAD, V1, 'r')
+    plt.title("V–θ (rv = 9)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+
+    plt.subplot(2, 2, 2)
+    plt.plot(CAD, V2, 'b')
+    plt.title("V–θ (rv = 10)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+
+    plt.subplot(2, 2, 3)
+    plt.plot(CAD, V3, 'g')
+    plt.title("V–θ (rv = 11)")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+
+    plt.subplot(2, 2, 4)
+    plt.plot(CAD, V1, 'r', label='rv = 9')
+    plt.plot(CAD, V2, 'b', label='rv = 10')
+    plt.plot(CAD, V3, 'g', label='rv = 11')
+    plt.title("V–θ comparativo")
+    plt.xlabel("Ângulo do Virabrequim (°)")
+    plt.ylabel("Volume (m³)")
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
+
 
 print("\n\n🏁 Simulações finalizadas.")
 
