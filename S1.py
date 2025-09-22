@@ -199,115 +199,117 @@ for i in range(len(rv_exp)):
               #f"{r['sfc_g_kWh']:>9.1f}")
 
 
-# ==========================================================================
-# TAREFA: Gustavo
-# Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
-# --------------------------------------------------------------------------
+    # ==========================================================================
+    # TAREFA: PESSOA 5
+    # Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
+    # --------------------------------------------------------------------------
+    print("--> Geração de gráficos e tabelas a ser implementada aqui.")
 
-# --- Volumes (m³) ---
-V1 = resultados_finais[0]['V_sim']   # caso rv=9
-V2 = resultados_finais[1]['V_sim']   # caso rv=10
-V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
-# --- Pressões (convertidas de Pa para bar) ---
-p1 = resultados_finais[0]['p_sim'] / 1e5
-p2 = resultados_finais[1]['p_sim'] / 1e5
-p3 = resultados_finais[2]['p_sim'] / 1e5
+  # --- Volumes (m³) ---
+  V1 = resultados_finais[0]['V_sim']   # caso rv=9
+  V2 = resultados_finais[1]['V_sim']   # caso rv=10
+  V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
-# --- Ângulo do virabrequim (em graus) ---
-CAD = np.degrees(resultados_finais[0]['Th_sim'])
+  # --- Pressões (convertidas de Pa para bar) ---
+  p1 = resultados_finais[0]['p_sim'] / 1e5
+  p2 = resultados_finais[1]['p_sim'] / 1e5
+  p3 = resultados_finais[2]['p_sim'] / 1e5
 
-# Diagramas P-V
-plt.figure(1)
+  # --- Ângulo do virabrequim (em graus) ---
+  CAD = np.degrees(resultados_finais[0]['Th_sim'])
 
-plt.subplot(2, 2, 1)
-plt.plot(V1, p1, color='r', linestyle='-')
-plt.title("Diagrama p-V Ciclo Otto (rv = 9)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+  # Diagramas P-V
+  plt.figure(1)
 
-plt.subplot(2, 2, 2)
-plt.plot(V2, p2, color='b', linestyle='-')
-plt.title("Diagrama p-V Ciclo Otto (rv = 10)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+  plt.subplot(2, 2, 1)
+  plt.plot(V1, p1, color='r', linestyle='-')
+  plt.title("Diagrama p-V Ciclo Otto (rv = 9)")
+  plt.xlabel("Volume (m³)")
+  plt.ylabel("Pressão (Pa)")
 
-plt.subplot(2, 2, 3)
-plt.plot(V3, p3, color='g', linestyle='-')
-plt.title("Diagrama p-V Ciclo Otto (rv = 11)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
+  plt.subplot(2, 2, 2)
+  plt.plot(V2, p2, color='b', linestyle='-')
+  plt.title("Diagrama p-V Ciclo Otto (rv = 10)")
+  plt.xlabel("Volume (m³)")
+  plt.ylabel("Pressão (Pa)")
 
-plt.subplot(2, 2, 4)
-plt.plot(V1, p1, label='rv = 9', color='r', linestyle='-')
-plt.plot(V2, p2, label='rv = 10', color='b', linestyle='-')
-plt.plot(V3, p3, label='rv = 11', color='g', linestyle='-')
-plt.title("Diagrama p-V Ciclo Otto (diferentes valores de rv)")
-plt.xlabel("Volume (m³)")
-plt.ylabel("Pressão (Pa)")
-plt.legend()
+  plt.subplot(2, 2, 3)
+  plt.plot(V3, p3, color='g', linestyle='-')
+  plt.title("Diagrama p-V Ciclo Otto (rv = 11)")
+  plt.xlabel("Volume (m³)")
+  plt.ylabel("Pressão (Pa)")
 
-# Gráficos de Pressão x CAD
-plt.figure(2)
+  plt.subplot(2, 2, 4)
+  plt.plot(V1, p1, label='rv = 9', color='r', linestyle='-')
+  plt.plot(V2, p2, label='rv = 10', color='b', linestyle='-')
+  plt.plot(V3, p3, label='rv = 11', color='g', linestyle='-')
+  plt.title("Diagrama p-V Ciclo Otto (diferentes valores de rv)")
+  plt.xlabel("Volume (m³)")
+  plt.ylabel("Pressão (Pa)")
+  plt.legend()
 
-plt.subplot(2, 2, 1)
-plt.plot(CAD, p1, color='r', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+  # Gráficos de Pressão x CAD
+  plt.figure(2)
 
-plt.subplot(2, 2, 2)
-plt.plot(CAD, p2, color='b', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+  plt.subplot(2, 2, 1)
+  plt.plot(CAD, p1, color='r', linestyle='-')
+  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Pressão (Pa)")
 
-plt.subplot(2, 2, 3)
-plt.plot(CAD, p3, color='g', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
+  plt.subplot(2, 2, 2)
+  plt.plot(CAD, p2, color='b', linestyle='-')
+  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Pressão (Pa)")
 
-plt.subplot(2, 2, 4)
-plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
-plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
-plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Pressão (Pa)")
-plt.legend()
+  plt.subplot(2, 2, 3)
+  plt.plot(CAD, p3, color='g', linestyle='-')
+  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Pressão (Pa)")
 
-# Gráficos de Volume x CAD
-plt.figure(3)
+  plt.subplot(2, 2, 4)
+  plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
+  plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
+  plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
+  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Pressão (Pa)")
+  plt.legend()
 
-plt.subplot(2, 2, 1)
-plt.plot(CAD, V1, color='r', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
+  # Gráficos de Volume x CAD
+  plt.figure(3)
 
-plt.subplot(2, 2, 2)
-plt.plot(CAD, V2, color='b', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
+  plt.subplot(2, 2, 1)
+  plt.plot(CAD, V1, color='r', linestyle='-')
+  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Volume (m³)")
 
-plt.subplot(2, 2, 3)
-plt.plot(CAD, V3, color='g', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
+  plt.subplot(2, 2, 2)
+  plt.plot(CAD, V2, color='b', linestyle='-')
+  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Volume (m³)")
 
-plt.subplot(2, 2, 4)
-plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
-plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
-plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
-plt.xlabel("Ângulo do Virabrequim (°)")
-plt.ylabel("Volume (m³)")
-plt.legend()
+  plt.subplot(2, 2, 3)
+  plt.plot(CAD, V3, color='g', linestyle='-')
+  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Volume (m³)")
 
-plt.show()
+  plt.subplot(2, 2, 4)
+  plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
+  plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
+  plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
+  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
+  plt.xlabel("Ângulo do Virabrequim (°)")
+  plt.ylabel("Volume (m³)")
+  plt.legend()
+
+  plt.show()
 
 print("\n\n🏁 Simulações finalizadas.")
 
@@ -315,26 +317,7 @@ print("\n\n🏁 Simulações finalizadas.")
 # TAREFA: PESSOA 6
 # Objetivo: Apresentar a tabela final compilada com os resultados.
 # -------------------------------------------------------------------------
-
-print("\n========== TABELA FINAL DE RESULTADOS ==========")
-print(f"{'rv':>4} | {'Ni (kW)':>10} {'Ne (kW)':>10} {'Na (kW)':>10} {'Nt (kW)':>10} | "
-      f"{'ηm (%)':>8} {'ηt (%)':>8} {'ηg (%)':>8} {'ηv (%)':>8} | "
-      f"{'Ce (kg/kJ)':>12} | {'imep (kPa)':>12} {'bmep (kPa)':>12} {'fmep (kPa)':>12}")
-
-print("-"*130)
-
-for r in resultados_finais:
-    # consumo específico em kg/kJ
-    Ce = (r['mpF_exp'] / r['Nt']) if r['Nt'] > 0 else np.nan
-
-    print(f"{r['rv']:4.0f} | "
-          f"{r['Ni']:10.2f} {r['Ne']:10.2f} {r['Na']:10.2f} {r['Nt']:10.2f} | "
-          f"{r['nm']:8.2f} {r['nt']:8.2f} {r['ng']:8.2f} {r['nv']:8.2f} | "
-          f"{Ce:12.5f} | "
-          f"{r['imep']:12.2f} {r['bmep']:12.2f} {r['fmep']:12.2f}")
-
-
-
+print("\n--> Tabela final de resultados a ser gerdX.")
 
 
 #-----------------------------------------------------------------------------#
