@@ -212,9 +212,9 @@ V2 = resultados_finais[1]['V_sim']   # caso rv=10
 V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
 # --- Pressões (convertidas de Pa para bar) ---
-p1 = resultados_finais[0]['p_sim'] / 1e5
-p2 = resultados_finais[1]['p_sim'] / 1e5
-p3 = resultados_finais[2]['p_sim'] / 1e5
+p1 = resultados_finais[0]['p_sim']
+p2 = resultados_finais[1]['p_sim']
+p3 = resultados_finais[2]['p_sim']
 
 # --- Ângulo do virabrequim (em graus) ---
 CAD = np.degrees(resultados_finais[0]['Th_sim'])
