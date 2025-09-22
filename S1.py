@@ -206,110 +206,110 @@ for i in range(len(rv_exp)):
     print("--> Geração de gráficos e tabelas a ser implementada aqui.")
 
 
-  # --- Volumes (m³) ---
-  V1 = resultados_finais[0]['V_sim']   # caso rv=9
-  V2 = resultados_finais[1]['V_sim']   # caso rv=10
-  V3 = resultados_finais[2]['V_sim']   # caso rv=11
+# --- Volumes (m³) ---
+V1 = resultados_finais[0]['V_sim']   # caso rv=9
+V2 = resultados_finais[1]['V_sim']   # caso rv=10
+V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
-  # --- Pressões (convertidas de Pa para bar) ---
-  p1 = resultados_finais[0]['p_sim'] / 1e5
-  p2 = resultados_finais[1]['p_sim'] / 1e5
-  p3 = resultados_finais[2]['p_sim'] / 1e5
+# --- Pressões (convertidas de Pa para bar) ---
+p1 = resultados_finais[0]['p_sim'] / 1e5
+p2 = resultados_finais[1]['p_sim'] / 1e5
+p3 = resultados_finais[2]['p_sim'] / 1e5
 
-  # --- Ângulo do virabrequim (em graus) ---
-  CAD = np.degrees(resultados_finais[0]['Th_sim'])
+# --- Ângulo do virabrequim (em graus) ---
+CAD = np.degrees(resultados_finais[0]['Th_sim'])
 
-  # Diagramas P-V
-  plt.figure(1)
+# Diagramas P-V
+plt.figure(1)
 
-  plt.subplot(2, 2, 1)
-  plt.plot(V1, p1, color='r', linestyle='-')
-  plt.title("Diagrama p-V Ciclo Otto (rv = 9)")
-  plt.xlabel("Volume (m³)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 1)
+plt.plot(V1, p1, color='r', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 9)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 2)
-  plt.plot(V2, p2, color='b', linestyle='-')
-  plt.title("Diagrama p-V Ciclo Otto (rv = 10)")
-  plt.xlabel("Volume (m³)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 2)
+plt.plot(V2, p2, color='b', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 10)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 3)
-  plt.plot(V3, p3, color='g', linestyle='-')
-  plt.title("Diagrama p-V Ciclo Otto (rv = 11)")
-  plt.xlabel("Volume (m³)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 3)
+plt.plot(V3, p3, color='g', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (rv = 11)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 4)
-  plt.plot(V1, p1, label='rv = 9', color='r', linestyle='-')
-  plt.plot(V2, p2, label='rv = 10', color='b', linestyle='-')
-  plt.plot(V3, p3, label='rv = 11', color='g', linestyle='-')
-  plt.title("Diagrama p-V Ciclo Otto (diferentes valores de rv)")
-  plt.xlabel("Volume (m³)")
-  plt.ylabel("Pressão (Pa)")
-  plt.legend()
+plt.subplot(2, 2, 4)
+plt.plot(V1, p1, label='rv = 9', color='r', linestyle='-')
+plt.plot(V2, p2, label='rv = 10', color='b', linestyle='-')
+plt.plot(V3, p3, label='rv = 11', color='g', linestyle='-')
+plt.title("Diagrama p-V Ciclo Otto (diferentes valores de rv)")
+plt.xlabel("Volume (m³)")
+plt.ylabel("Pressão (Pa)")
+plt.legend()
 
-  # Gráficos de Pressão x CAD
-  plt.figure(2)
+# Gráficos de Pressão x CAD
+plt.figure(2)
 
-  plt.subplot(2, 2, 1)
-  plt.plot(CAD, p1, color='r', linestyle='-')
-  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 1)
+plt.plot(CAD, p1, color='r', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 2)
-  plt.plot(CAD, p2, color='b', linestyle='-')
-  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 2)
+plt.plot(CAD, p2, color='b', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 3)
-  plt.plot(CAD, p3, color='g', linestyle='-')
-  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Pressão (Pa)")
+plt.subplot(2, 2, 3)
+plt.plot(CAD, p3, color='g', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
 
-  plt.subplot(2, 2, 4)
-  plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
-  plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
-  plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
-  plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Pressão (Pa)")
-  plt.legend()
+plt.subplot(2, 2, 4)
+plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
+plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
+plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
+plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Pressão (Pa)")
+plt.legend()
 
-  # Gráficos de Volume x CAD
-  plt.figure(3)
+# Gráficos de Volume x CAD
+plt.figure(3)
 
-  plt.subplot(2, 2, 1)
-  plt.plot(CAD, V1, color='r', linestyle='-')
-  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Volume (m³)")
+plt.subplot(2, 2, 1)
+plt.plot(CAD, V1, color='r', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
 
-  plt.subplot(2, 2, 2)
-  plt.plot(CAD, V2, color='b', linestyle='-')
-  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Volume (m³)")
+plt.subplot(2, 2, 2)
+plt.plot(CAD, V2, color='b', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
 
-  plt.subplot(2, 2, 3)
-  plt.plot(CAD, V3, color='g', linestyle='-')
-  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Volume (m³)")
+plt.subplot(2, 2, 3)
+plt.plot(CAD, V3, color='g', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
 
-  plt.subplot(2, 2, 4)
-  plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
-  plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
-  plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
-  plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
-  plt.xlabel("Ângulo do Virabrequim (°)")
-  plt.ylabel("Volume (m³)")
-  plt.legend()
+plt.subplot(2, 2, 4)
+plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
+plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
+plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
+plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
+plt.xlabel("Ângulo do Virabrequim (°)")
+plt.ylabel("Volume (m³)")
+plt.legend()
 
-  plt.show()
+plt.show()
 
 print("\n\n🏁 Simulações finalizadas.")
 
