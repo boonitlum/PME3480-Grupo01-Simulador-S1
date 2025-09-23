@@ -199,11 +199,11 @@ for i in range(len(rv_exp)):
               #f"{r['sfc_g_kWh']:>9.1f}")
 
 
-    # ==========================================================================
-    # TAREFA: PESSOA 5
-    # Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
-    # --------------------------------------------------------------------------
-    print("--> Geração de gráficos e tabelas a ser implementada aqui.")
+# ==========================================================================
+# TAREFA: Gustavo
+# Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
+# --------------------------------------------------------------------------
+
 
 
 # --- Volumes (m³) ---
@@ -211,10 +211,10 @@ V1 = resultados_finais[0]['V_sim']   # caso rv=9
 V2 = resultados_finais[1]['V_sim']   # caso rv=10
 V3 = resultados_finais[2]['V_sim']   # caso rv=11
 
-# --- Pressões (convertidas de Pa para bar) ---
-p1 = resultados_finais[0]['p_sim']
-p2 = resultados_finais[1]['p_sim']
-p3 = resultados_finais[2]['p_sim']
+# --- Pressões (kPa) ---
+p1 = resultados_finais[0]['p_sim']/1000
+p2 = resultados_finais[1]['p_sim']/1000
+p3 = resultados_finais[2]['p_sim']/1000
 
 # --- Ângulo do virabrequim (em graus) ---
 CAD = np.degrees(resultados_finais[0]['Th_sim'])
@@ -317,7 +317,23 @@ print("\n\n🏁 Simulações finalizadas.")
 # TAREFA: PESSOA 6
 # Objetivo: Apresentar a tabela final compilada com os resultados.
 # -------------------------------------------------------------------------
-print("\n--> Tabela final de resultados a ser gerdX.")
+# ==========================================================================
+print("\n==================== TABELA FINAL DE RESULTADOS ====================\n")
+
+# Cabeçalho da tabela
+print(f"{'rv':>3} | {'Ni (kW)':>9} | {'Ne (kW)':>9} | {'Na (kW)':>9} | {'Nt (kW)':>9} | "
+      f"{'imep (kPa)':>11} | {'bmep (kPa)':>11} | {'fmep (kPa)':>11} | "
+      f"{'ηt (%)':>7} | {'ηm (%)':>7} | {'ηg (%)':>7} | {'ηv (%)':>7} | {'Ce (kg/kJ)':>12}")
+
+print("-" * 120)
+
+# Linhas da tabela
+for r in resultados_finais:
+    Ce_kg_kJ = (r['mpF_exp'] / r['Ne']) if r['Ne'] > 0 else np.nan
+    print(f"{r['rv']:>3.0f} | {r['Ni']:>9.3f} | {r['Ne']:>9.3f} | {r['Na']:>9.3f} | {r['Nt']:>9.3f} | "
+          f"{r['imep']:>11.3f} | {r['bmep']:>11.3f} | {r['fmep']:>11.3f} | "
+          f"{r['nt']:>7.2f} | {r['nm']:>7.2f} | {r['ng']:>7.2f} | {r['nv']:>7.2f} | {Ce_kg_kJ:>12.6f}")
+
 
 
 #-----------------------------------------------------------------------------#
