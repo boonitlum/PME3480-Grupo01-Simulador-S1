@@ -51,7 +51,7 @@ mWF = 2.0          # Fator de forma de Wiebe
 pint = 100e3       # Pressão de admissão (Pa)
 Tint = 273.15 + 25 # Temperatura de admissão (K)
 pexh = 100e3       # Pressão de escape (Pa)
-phi = 1.0          # Razão de equivalência
+#phi = 1.0          # Razão de equivalência
 
 # Constantes físicas
 PCI_CH4 = 50.01e6  # Poder Calorífico Inferior do Metano (J/kg)
@@ -126,6 +126,7 @@ for i in range(len(rv_exp)):
     Ne_kW = (Mt_Nm * omega) / 1000.0           # efetiva a partir do torque (kW)
     Na_kW = Ni_kW - Ne_kW                       # atrito (kW)
     Nt_kW = (mpF_kg_s * PCI_CH4) / 1000.0      # térmica (kW) com PCI em J/kg
+
     # ------------------ MEPs usando Vu (swept volume) ----------------------
     # imep = (Pot_indicada*1000)*x / (Vu * Zc * n)  [Pa] -> /1e3 [kPa]
     denom = (Vu * Zc * n)
@@ -177,34 +178,11 @@ for i in range(len(rv_exp)):
     resultados_finais.append(caso_atual)
     print(f"--> Simulação para rv = {rv} concluída e resultados armazenados.")
 
-    # Exemplo de como acessar os dados do primeiro caso (rv=9) após o loop:
-    # print("\nDados armazenados para o primeiro caso (rv=9):")
-    # print(resultados_finais[0]['p_sim']) # Imprime o array de pressão
-
-
-        # Print-resumo do caso
-        #print(f"--> rv={rv:.1f} | Ni={Ni_kW:.2f} kW | Ne={Ne_kW:.2f} kW | Nt={Nt_kW:.2f} kW")
-        #print(f"    MEPs: imep={imep_kPa:.1f} kPa | bmep={bmep_kPa:.1f} kPa | fmep={fmep_kPa:.1f} kPa")
-        #print(f"    ηt={nt_pct:.1f}% | ηm={nm_pct:.1f}% | ηg={ng_pct:.1f}% | SFC={sfc_g_kWh:.1f} g/kWh")
-
-    # --------------------------------------------------------------------------
-    # 6. Tabela-resumo final (linhas por caso)
-    # --------------------------------------------------------------------------
-    #print("\n========== RESUMO FINAL ==========")
-    #print("rv |  Ni[kW]  Ne[kW]  Nt[kW] | imep[kPa] bmep[kPa] fmep[kPa] | ηt[%] ηm[%] ηg[%] | SFC[g/kWh]")
-    #for r in resultados_finais:
-        #print(f"{r['rv']:>2.0f} | {r['Ni_kW']:>7.2f} {r['Ne_kW']:>7.2f} {r['Nt_kW']:>7.2f} | "
-              #f"{r['imep_kPa']:>8.1f} {r['bmep_kPa']:>9.1f} {r['fmep_kPa']:>9.1f} | "
-              #f"{r['eta_term_pct']:>5.1f} {r['eta_mec_pct']:>5.1f} {r['eta_glob_pct']:>5.1f} | "
-              #f"{r['sfc_g_kWh']:>9.1f}")
-
 
 # ==========================================================================
 # TAREFA: Gustavo
 # Objetivo: Gerar gráficos (ex: PxV) e tabelas. Salvar arquivos.
 # --------------------------------------------------------------------------
-
-
 
 # --- Volumes (m³) ---
 V1 = resultados_finais[0]['V_sim']   # caso rv=9
