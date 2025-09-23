@@ -232,19 +232,19 @@ plt.figure(2)
 
 plt.subplot(2, 2, 1)
 plt.plot(CAD, p1, color='r', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 9)")
+plt.title("Pressão pelo Ângulo do Virabrequim (rv = 9)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Pressão (Pa)")
 
 plt.subplot(2, 2, 2)
 plt.plot(CAD, p2, color='b', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 10)")
+plt.title("Pressão pelo Ângulo do Virabrequim (rv = 10)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Pressão (Pa)")
 
 plt.subplot(2, 2, 3)
 plt.plot(CAD, p3, color='g', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim (rv = 11)")
+plt.title("Pressão pelo Ângulo do Virabrequim (rv = 11)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Pressão (Pa)")
 
@@ -252,7 +252,7 @@ plt.subplot(2, 2, 4)
 plt.plot(CAD, p1, label='rv = 9', color='r', linestyle='-')
 plt.plot(CAD, p2, label='rv = 10', color='b', linestyle='-')
 plt.plot(CAD, p3, label='rv = 11', color='g', linestyle='-')
-plt.title("Gráfico de Pressão pelo Ângulo do Virabrequim")
+plt.title("Pressão pelo Ângulo do Virabrequim")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Pressão (Pa)")
 plt.legend()
@@ -262,19 +262,19 @@ plt.figure(3)
 
 plt.subplot(2, 2, 1)
 plt.plot(CAD, V1, color='r', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 9)")
+plt.title("Volume pelo Ângulo do Virabrequim (rv = 9)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Volume (m³)")
 
 plt.subplot(2, 2, 2)
 plt.plot(CAD, V2, color='b', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 10)")
+plt.title("Volume pelo Ângulo do Virabrequim (rv = 10)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Volume (m³)")
 
 plt.subplot(2, 2, 3)
 plt.plot(CAD, V3, color='g', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim (rv = 11)")
+plt.title("Volume pelo Ângulo do Virabrequim (rv = 11)")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Volume (m³)")
 
@@ -282,10 +282,30 @@ plt.subplot(2, 2, 4)
 plt.plot(CAD, V1, label='rv = 9', color='r', linestyle='-')
 plt.plot(CAD, V2, label='rv = 10', color='b', linestyle='-')
 plt.plot(CAD, V3, label='rv = 11', color='g', linestyle='-')
-plt.title("Gráfico de Volume pelo Ângulo do Virabrequim")
+plt.title("Volume pelo Ângulo do Virabrequim")
 plt.xlabel("Ângulo do Virabrequim (°)")
 plt.ylabel("Volume (m³)")
 plt.legend()
+
+# --- SALVAR FIGURAS DENTRO DO SCRIPT ---
+import os, shutil
+shutil.rmtree('figs', ignore_errors=True)
+os.makedirs('figs', exist_ok=True)
+
+# salva todas as figuras abertas neste processo
+for i in plt.get_fignums():
+    plt.figure(i)
+    plt.tight_layout()
+    plt.savefig(f'figs/figure_{i}.png', dpi=300, bbox_inches='tight')
+
+# opcional: também em PDF/SVG
+#     plt.savefig(f'figs/figure_{i}.pdf', bbox_inches='tight')
+#     plt.savefig(f'figs/figure_{i}.svg', bbox_inches='tight')
+
+# compacta em figs.zip
+shutil.make_archive('figs', 'zip', 'figs')
+
+# se quiser ainda ver inline quando rodar local/colab:
 
 plt.show()
 
